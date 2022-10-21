@@ -24,8 +24,9 @@ TEST_CASE("Testing Getters") {
   CHECK(3 == p2.GetWidth());
 }
 
-TEST_CASE("Testing Particle") {
+TEST_CASE("Testing Particle Type") {
   Particle::AddParticleType("P+", 1, 2);
+  Particle::AddParticleType("K*", 1, 2, 3);
   Particle::AddParticleType("K*", 1, 2, 3);
 
   CHECK(Particle::FindParticleTest("P+") == 0);

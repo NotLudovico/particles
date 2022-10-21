@@ -14,7 +14,9 @@ Particle::Particle(char* name, double px, double py, double pz)
 }
 
 int Particle::FindParticle(char* name) {
-  for (int i = 0; i < Particle::table_.size(); i++) {
+  // if (table_[0] == nullptr) return -1;
+
+  for (int i = 0; i != table_.size() - 1; i++) {
     if (table_[i]->GetName() == name) return i;
   }
 
@@ -28,7 +30,7 @@ int Particle::FindParticleTest(char* name) {
 
 void Particle::AddParticleType(char* name, double mass, int charge,
                                double width) {
-  if (table_.size() >= 11) return;
+  if (table_.size() >= 11 || FindParticle(name) != -1) return;
 
   ParticleType* new_particle;
   if (width > 0)

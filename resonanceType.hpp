@@ -10,8 +10,8 @@ class ResonanceType : public ParticleType {
  public:
   ResonanceType(char* name, double mass, int charge, double width)
       : ParticleType{name, mass, charge}, width_{width} {}
-  const double GetWidth() const;
-  void Print() const;
+  double GetWidth() const override;
+  void Print() const override;
 };
 
 #endif

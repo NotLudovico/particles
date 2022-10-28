@@ -12,9 +12,10 @@ class ParticleType {
       : name_{name}, mass_{mass}, charge_{charge} {}
 
   const char* GetName() const;
-  const double GetMass() const;
-  const int GetCharge() const;
-  void Print() const;
+  double GetMass() const;
+  int GetCharge() const;
+  virtual double GetWidth() const;
+  virtual void Print() const;
 };
 
 #endif

@@ -12,6 +12,7 @@ class Particle {
   int index_;
   static std::vector<ParticleType*> table_;
   static int FindParticle(char* name);
+  void Boost(double bx, double by, double bz);
 
  public:
   Particle(char* name, double px = 0, double py = 0, double pz = 0);
@@ -20,6 +21,7 @@ class Particle {
   static int FindParticleTest(char* name);
   static void PrintTable();
   void SetIndex(int index);
+  void SetIndex(char* name);
   void Print() const;
   double GetPx() const;
   double GetPy() const;
@@ -27,8 +29,9 @@ class Particle {
   void SetP(double px = 0, double py = 0, double pz = 0);
   double GetPNorm() const;
   double GetMass() const;
-  double GetTotalEnergy() const;
+  double GetEnergy() const;
   double InvMass(Particle& other) const;
+  int Decay2body(Particle& dau1, Particle& dau2) const;
 };
 
 #endif

@@ -22,6 +22,7 @@ class Particle {
   static void PrintTable();
   void SetIndex(int index);
   void SetIndex(char* name);
+  int GetIndex() const;
   void Print() const;
   double GetPx() const;
   double GetPy() const;

@@ -47,7 +47,7 @@ void Particle::AddParticleType(char* name, double mass, int charge,
 
 void Particle::SetIndex(int index) { index_ = index; };
 void Particle::SetIndex(char* name) { index_ = FindParticle(name); };
-
+int Particle::GetIndex() const { return index_; }
 void Particle::PrintTable() {
   std::cout << "TABLE:\n";
   for (size_t i = 0; i < table_.size(); i++) {

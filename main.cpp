@@ -9,19 +9,20 @@
 #include "resonanceType.hpp"
 
 int Main() {
-  Particle::AddParticleType("Pion+", 0.13957, 1);
   Particle::AddParticleType("Pion-", 0.13957, -1);
   Particle::AddParticleType("Kaon+", 0.49367, 1);
   Particle::AddParticleType("Kaon-", 0.49367, -1);
   Particle::AddParticleType("Proton+", 0.93827, 1);
   Particle::AddParticleType("Proton-", 0.93827, -1);
-  Particle::AddParticleType("K*", 0.89166, 0, 0.05);
+  Particle::AddParticleType("K*", 0.89166, 0, 0.050);
+
+  Particle::PrintTable();
 
   gRandom->SetSeed();
 
   std::vector<Particle> eventParticles;
 
-  TH1F* particleDistribution = new TH1F("pd", "Particle Distribution", 7, 0, 7);
+  TH1F* particleDistribution = new TH1F("pd", "Particle Distribution", 6, 0, 6);
 
   for (size_t i = 0; i < 1E5; i++) {
     eventParticles.clear();
@@ -29,7 +30,7 @@ int Main() {
     for (size_t j = 0; j != 100; j++) {
       double x = gRandom->Rndm();
       double phi = 2 * M_PI * gRandom->Rndm();
-      double theta = 2 * M_PI * gRandom->Rndm();
+      double theta = M_PI * gRandom->Rndm();
       double impulse = gRandom->Exp(1);
 
       double px = impulse * cos(theta) * sin(phi);
@@ -57,11 +58,10 @@ int Main() {
         index = 5;
       } else {
         name = "K*";
-        index = 6;
       }
 
       if (name == "K*") {
-        Particle resonance = Particle(name, px, py, pz);
+        Particle resonance = Particle("K*", px, py, pz);
 
         double probability = gRandom->Rndm();
 
@@ -74,14 +74,14 @@ int Main() {
         }
 
         // resonance.Decay2body(p, k);
-        eventParticles.push_back(p);
-        eventParticles.push_back(k);
+        // eventParticles.push_back(p);
+        // eventParticles.push_back(k);
 
         particleDistribution->Fill(p.GetIndex());
         particleDistribution->Fill(k.GetIndex());
       } else {
         particleDistribution->Fill(index);
-        eventParticles.push_back(Particle(name, px, py, pz));
+        // eventParticles.push_back(Particle(name, px, py, pz));
       }
     }
   }

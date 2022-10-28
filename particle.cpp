@@ -7,21 +7,23 @@
 #include "particleType.hpp"
 #include "resonanceType.hpp"
 
-std::vector<ParticleType*> Particle::table_(1, nullptr);
+std::vector<ParticleType*> Particle::table_ = MakeVector();
 
 Particle::Particle(char* name, double px, double py, double pz)
     : px_{px}, py_{py}, pz_{pz} {
   index_ = Particle::FindParticle(name);
+  std::cout << "CREATED PARTICLE" << name << '\n';
 }
 
 int Particle::FindParticle(char* name) {
-  // if (table_[0] == nullptr) return -1;
-
-  for (int i = 0; i != table_.size() - 1; i++) {
+  std::cout << "\n";
+  for (int i = 0; i != table_.size(); i++) {
+    std::cout << table_[i]->GetName() << '\n';
     if (table_[i]->GetName() == name) return i;
   }
+  std::cout << '\n';
 
-  std::cout << "\n ** PARTICLE NOT FOUND ** \n";
+  std::cout << "\n ** PARTICLE " << name << " NOT FOUND ** \n";
   return -1;
 }
 
@@ -31,18 +33,14 @@ int Particle::FindParticleTest(char* name) {
 
 void Particle::AddParticleType(char* name, double mass, int charge,
                                double width) {
-  if (table_.size() >= 11 || FindParticle(name) != -1) return;
-
   ParticleType* new_particle;
+
   if (width > 0)
     new_particle = new ResonanceType{name, mass, charge, width};
   else
     new_particle = new ParticleType{name, mass, charge};
 
-  if (table_[0] == nullptr)
-    table_[0] = new_particle;
-  else
-    table_.push_back(new_particle);
+  table_.push_back(new_particle);
 }
 
 void Particle::SetIndex(int index) { index_ = index; };

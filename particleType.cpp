@@ -1,7 +1,9 @@
 #include "particleType.hpp"
 
 #include <iostream>
-const char* ParticleType::GetName() const { return name_; }
+#include <string>
+
+const std::string ParticleType::GetName() const { return name_; }
 double ParticleType::GetMass() const { return mass_; }
 int ParticleType::GetCharge() const { return charge_; }
 void ParticleType::Print() const {

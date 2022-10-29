@@ -1,14 +1,18 @@
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
+#include "TCanvas.h"
 #include "TH1F.h"
 #include "TRandom.h"
+#include "helpers.hpp"
 #include "particle.hpp"
 #include "particleType.hpp"
 #include "resonanceType.hpp"
 
 int Main() {
+  Particle::AddParticleType("Pion+", 0.13957, 1);
   Particle::AddParticleType("Pion-", 0.13957, -1);
   Particle::AddParticleType("Kaon+", 0.49367, 1);
   Particle::AddParticleType("Kaon-", 0.49367, -1);
@@ -16,53 +20,36 @@ int Main() {
   Particle::AddParticleType("Proton-", 0.93827, -1);
   Particle::AddParticleType("K*", 0.89166, 0, 0.050);
 
-  Particle::PrintTable();
-
   gRandom->SetSeed();
+  TCanvas* c1 = new TCanvas("Data About Generated Particles", "c1", 1000, 1000);
+  TCanvas* c2 = new TCanvas("Data Analysis", "c2", 1000, 1000);
 
+  c1->Divide(2, 2);
+
+  TH1F* particleDistribution = new TH1F("pd", "Particle Distribution", 7, 0, 7);
+  TH1F* phiDistribution =
+      new TH1F("phi", "Phi Angle Distribution", 1000, 0, 2 * M_PI);
+  TH1F* thetaDistribution =
+      new TH1F("theta", "Theta Angle Distribution", 1000, 0, M_PI);
+  TH1F* impulseDistribution =
+      new TH1F("impulse", "Impulse Distribution", 1000, 0, 4);
+
+  // Simulating Events
   std::vector<Particle> eventParticles;
-
-  TH1F* particleDistribution = new TH1F("pd", "Particle Distribution", 6, 0, 6);
-
   for (size_t i = 0; i < 1E5; i++) {
     eventParticles.clear();
 
     for (size_t j = 0; j != 100; j++) {
-      double x = gRandom->Rndm();
-      double phi = 2 * M_PI * gRandom->Rndm();
-      double theta = M_PI * gRandom->Rndm();
-      double impulse = gRandom->Exp(1);
+      InitialConditions impulseProperties = GenerateParticleImpulse();
+      auto [phi, theta, p_module, px, py, pz] = impulseProperties;
 
-      double px = impulse * cos(theta) * sin(phi);
-      double py = impulse * sin(theta) * sin(phi);
-      double pz = impulse * cos(phi);
+      phiDistribution->Fill(phi);
+      thetaDistribution->Fill(theta);
+      impulseDistribution->Fill(p_module);
 
-      char* name = "";
-      int index = 0;
-      if (x <= 0.4) {
-        name = "Pion+";
-      } else if (x <= 0.8) {
-        name = "Pion-";
-        index = 1;
-      } else if (x <= 0.85) {
-        name = "Kaon+";
-        index = 2;
-      } else if (x <= 0.9) {
-        name = "Kaon-";
-        index = 3;
-      } else if (x <= 0.945) {
-        name = "Proton+";
-        index = 4;
-      } else if (x <= 0.99) {
-        name = "Proton-";
-        index = 5;
-      } else {
-        name = "K*";
-      }
+      Particle particle = GenerateParticle(px, py, pz);
 
-      if (name == "K*") {
-        Particle resonance = Particle("K*", px, py, pz);
-
+      if (particle.GetName() == "K*") {
         double probability = gRandom->Rndm();
 
         Particle p = Particle("Pion+");
@@ -73,18 +60,30 @@ int Main() {
           k.SetIndex("Kaon+");
         }
 
-        // resonance.Decay2body(p, k);
-        // eventParticles.push_back(p);
-        // eventParticles.push_back(k);
+        eventParticles.push_back(particle);
 
-        particleDistribution->Fill(p.GetIndex());
-        particleDistribution->Fill(k.GetIndex());
+        particle.Decay2body(p, k);
+
+        eventParticles.push_back(p);
+        eventParticles.push_back(k);
+
+        particleDistribution->Fill(6);
       } else {
-        particleDistribution->Fill(index);
-        // eventParticles.push_back(Particle(name, px, py, pz));
+        particleDistribution->Fill(
+            Particle::FindParticleTest(particle.GetName()));
+        eventParticles.push_back(particle);
       }
     }
   }
 
+  c1->cd(1);
   particleDistribution->Draw();
+  c1->cd(2);
+  phiDistribution->Draw();
+  c1->cd(3);
+  thetaDistribution->Draw();
+  c1->cd(4);
+  impulseDistribution->Draw();
+
+  return 0;
 }

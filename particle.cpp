@@ -3,35 +3,31 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #include "particleType.hpp"
 #include "resonanceType.hpp"
 
-std::vector<ParticleType*> Particle::table_ = MakeVector();
+std::vector<ParticleType*> Particle::table_{};
 
-Particle::Particle(char* name, double px, double py, double pz)
+Particle::Particle(std::string name, double px, double py, double pz)
     : px_{px}, py_{py}, pz_{pz} {
   index_ = Particle::FindParticle(name);
-  std::cout << "CREATED PARTICLE" << name << '\n';
 }
 
-int Particle::FindParticle(char* name) {
-  std::cout << "\n";
-  for (int i = 0; i != table_.size(); i++) {
-    std::cout << table_[i]->GetName() << '\n';
+int Particle::FindParticle(std::string name) {
+  for (int i = 0; i != static_cast<int>(table_.size()); i++)
     if (table_[i]->GetName() == name) return i;
-  }
-  std::cout << '\n';
 
   std::cout << "\n ** PARTICLE " << name << " NOT FOUND ** \n";
   return -1;
 }
 
-int Particle::FindParticleTest(char* name) {
+int Particle::FindParticleTest(std::string name) {
   return Particle::FindParticle(name);
 }
 
-void Particle::AddParticleType(char* name, double mass, int charge,
+void Particle::AddParticleType(std::string name, double mass, int charge,
                                double width) {
   ParticleType* new_particle;
 
@@ -44,16 +40,15 @@ void Particle::AddParticleType(char* name, double mass, int charge,
 }
 
 void Particle::SetIndex(int index) { index_ = index; };
-void Particle::SetIndex(char* name) { index_ = FindParticle(name); };
-int Particle::GetIndex() const { return index_; }
+void Particle::SetIndex(std::string name) { index_ = FindParticle(name); };
 void Particle::PrintTable() {
   std::cout << "TABLE:\n";
-  for (size_t i = 0; i < table_.size(); i++) {
+  for (int i = 0; i < static_cast<int>(table_.size()); i++) {
     table_[i]->Print();
     std::cout << '\n';
   }
 }
-
+std::string Particle::GetName() const { return table_[index_]->GetName(); }
 void Particle::Print() const {
   std::cout << "INDEX: " << index_ << '\n';
   std::cout << "Px: " << px_ << '\n';

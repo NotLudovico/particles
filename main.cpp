@@ -24,7 +24,7 @@ int Main() {
   TCanvas* c1 = new TCanvas("c1", "Data About Generated Particles", 2000, 2000);
   TCanvas* c2 = new TCanvas("c2", "Data Analysis", 2000, 2000);
 
-  c1->Divide(3, 3);
+  c1->Divide(3, 2);
   c2->Divide(3, 2);
 
   TH1F* particleDistribution = new TH1F("pd", "Particle Distribution", 7, 0, 7);
@@ -52,9 +52,9 @@ int Main() {
   int max_particles = 100;
   // Simulating Events
   std::vector<Particle> eventParticles;
-  std::vector<Particle> daughters;
+  // std::vector<Particle> daughters;
 
-  for (size_t i = 0; i < 1E5; i++) {
+  for (size_t i = 0; i < 1E4; i++) {
     eventParticles.clear();
 
     for (size_t j = 0; j != max_particles; j++) {
@@ -87,8 +87,10 @@ int Main() {
         eventParticles.push_back(p);
         eventParticles.push_back(k);
 
-        daughters.push_back(p);
-        daughters.push_back(k);
+        // daughters.push_back(p);
+        // daughters.push_back(k);
+
+        invMassDaughters->Fill(p.InvMass(k));
 
         particleDistribution->Fill(6);
       } else {
@@ -121,16 +123,15 @@ int Main() {
     }
 
     // Analizing Daughters
-    for (size_t j = 0; j != daughters.size(); j++) {
-      for (size_t k = 0; k != daughters.size(); k++) {
-        if (j != k) {
-          invMassDaughters->Fill(daughters[j].InvMass(daughters[k]));
-        }
-      }
-    }
+    // for (size_t j = 0; j != daughters.size(); j++) {
+    //   for (size_t k = 0; k != daughters.size(); k++) {
+    //     if (j != k) {
+    //       invMassDaughters->Fill(daughters[j].InvMass(daughters[k]));
+    //     }
+    //   }
+    // }
   }
 
-  std::cout << "TEST";
   c1->cd(1);
   particleDistribution->Draw();
   c1->cd(2);

@@ -38,7 +38,7 @@ void Particle::AddParticleType(std::string name, double mass, int charge,
 
   table_.push_back(new_particle);
 }
-
+int Particle::GetIndex() { return index_; }
 void Particle::SetIndex(int index) { index_ = index; };
 void Particle::SetIndex(std::string name) { index_ = FindParticle(name); };
 void Particle::PrintTable() {
@@ -49,6 +49,11 @@ void Particle::PrintTable() {
   }
 }
 std::string Particle::GetName() const { return table_[index_]->GetName(); }
+std::string Particle::GetType() const {
+  std::string name = GetName();
+  return name.substr(0, name.size() - 1);
+}
+
 int Particle::GetCharge() const { return table_[index_]->GetCharge(); }
 void Particle::Print() const {
   std::cout << "INDEX: " << index_ << '\n';
@@ -74,7 +79,7 @@ double Particle::GetPNorm() const {
 double Particle::GetEnergy() const {
   return std::sqrt(pow(GetMass(), 2) + pow(GetPNorm(), 2));
 }
-double Particle::InvMass(Particle& other) const {
+double Particle::InvMass(Particle const& other) const {
   return std::sqrt(pow((GetEnergy() + other.GetEnergy()), 2) -
                    (pow((GetPx() + other.GetPx()), 2) +
                     pow((GetPy() + other.GetPy()), 2) +

@@ -23,7 +23,9 @@ class Particle {
   static void PrintTable();
   void SetIndex(int index);
   void SetIndex(std::string name);
+  int GetIndex();
   std::string GetName() const;
+  std::string GetType() const;
   int GetCharge() const;
   void Print() const;
   double GetPx() const;
@@ -33,7 +35,7 @@ class Particle {
   double GetPNorm() const;
   double GetMass() const;
   double GetEnergy() const;
-  double InvMass(Particle& other) const;
+  double InvMass(Particle const& other) const;
   int Decay2body(Particle& dau1, Particle& dau2) const;
 };
 

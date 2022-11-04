@@ -49,6 +49,7 @@ void Particle::PrintTable() {
   }
 }
 std::string Particle::GetName() const { return table_[index_]->GetName(); }
+int Particle::GetCharge() const { return table_[index_]->GetCharge(); }
 void Particle::Print() const {
   std::cout << "INDEX: " << index_ << '\n';
   std::cout << "Px: " << px_ << '\n';

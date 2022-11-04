@@ -10,9 +10,7 @@ class ParticleType {
   const int charge_;
 
  public:
-  ParticleType(std::string name, double mass, int charge)
-      : name_{name}, mass_{mass}, charge_{charge} {}
-
+  ParticleType(std::string name, double mass, int charge);
   const std::string GetName() const;
   double GetMass() const;
   int GetCharge() const;

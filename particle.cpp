@@ -69,16 +69,16 @@ void Particle::SetP(double px, double py, double pz) {
 
 double Particle::GetMass() const { return table_[index_]->GetMass(); }
 double Particle::GetPNorm() const {
-  return GetPx() * GetPx() + GetPy() * GetPy() + GetPz() * GetPz();
+  return std::sqrt(GetPx() * GetPx() + GetPy() * GetPy() + GetPz() * GetPz());
 }
 double Particle::GetEnergy() const {
-  return std::sqrt(GetMass() * GetMass() + GetPNorm() * GetPNorm());
+  return std::sqrt(pow(GetMass(), 2) + pow(GetPNorm(), 2));
 }
 double Particle::InvMass(Particle& other) const {
   return std::sqrt(pow((GetEnergy() + other.GetEnergy()), 2) -
-                   (pow((GetPx() - other.GetPx()), 2) +
-                    pow((GetPy() - other.GetPy()), 2) +
-                    pow((GetPz() - other.GetPz()), 2)));
+                   (pow((GetPx() + other.GetPx()), 2) +
+                    pow((GetPy() + other.GetPy()), 2) +
+                    pow((GetPz() + other.GetPz()), 2)));
 }
 
 int Particle::Decay2body(Particle& dau1, Particle& dau2) const {

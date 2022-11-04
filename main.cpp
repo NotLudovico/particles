@@ -47,7 +47,7 @@ int Main() {
   TH1F* invMassKaonMinus =
       new TH1F("invmasskm", "Mass invariant of Kaon-/Pion-", 1000, 0, 4);
   TH1F* invMassDaughters = new TH1F(
-      "invmassdau", "Mass invariant of daughters of decay", 1000, 0, 4);
+      "invmassdau", "Mass invariant of daughters of decay", 1000, 0, 2);
 
   int max_particles = 100;
   // Simulating Events

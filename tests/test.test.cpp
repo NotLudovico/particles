@@ -28,9 +28,9 @@ TEST_CASE("Testing Particle Type") {
   Particle::AddParticleType("P+", 1, 2);
   Particle::AddParticleType("K*", 1, 2, 3);
 
-  CHECK(Particle::FindParticleTest("P+") == 1);
-  CHECK(Particle::FindParticleTest("K*") == 2);
-  CHECK(Particle::FindParticleTest("P-") == -1);
+  // CHECK(Particle::FindParticleTest("P+") == 1);
+  // CHECK(Particle::FindParticleTest("K*") == 2);
+  // CHECK(Particle::FindParticleTest("P-") == -1);
   std::cout << "PARTICLE |\n";
   Particle::PrintTable();
 }

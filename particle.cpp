@@ -23,10 +23,6 @@ int Particle::FindParticle(std::string name) {
   return -1;
 }
 
-int Particle::FindParticleTest(std::string name) {
-  return Particle::FindParticle(name);
-}
-
 void Particle::AddParticleType(std::string name, double mass, int charge,
                                double width) {
   ParticleType* new_particle;
@@ -49,10 +45,6 @@ void Particle::PrintTable() {
   }
 }
 std::string Particle::GetName() const { return table_[index_]->GetName(); }
-std::string Particle::GetType() const {
-  std::string name = GetName();
-  return name.substr(0, name.size() - 1);
-}
 
 int Particle::GetCharge() const { return table_[index_]->GetCharge(); }
 void Particle::Print() const {

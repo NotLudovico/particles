@@ -85,6 +85,9 @@
     "stop_token": "cpp",
     "cinttypes": "cpp",
     "macro.C": "cpp",
-    "proportions.C": "cpp"
+    "proportions.C": "cpp",
+    "myMacro-Final.C": "cpp",
+    "myClassMacro-Comp.C": "cpp",
+    "myMacro-Final-2.C": "cpp"
   }
 }

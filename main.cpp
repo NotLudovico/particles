@@ -1,9 +1,12 @@
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "TCanvas.h"
+#include "TF1.h"
+#include "TFile.h"
 #include "TH1F.h"
 #include "TRandom.h"
 #include "helpers.hpp"
@@ -11,7 +14,7 @@
 #include "particleType.hpp"
 #include "resonanceType.hpp"
 
-int Main() {
+int main() {
   Particle::AddParticleType("Pion+", 0.13957, 1);
   Particle::AddParticleType("Pion-", 0.13957, -1);
   Particle::AddParticleType("Kaon+", 0.49367, 1);
@@ -55,6 +58,11 @@ int Main() {
   TH1F* invMassDaughters = new TH1F(
       "invmassdau", "Mass invariant of daughters of decay", 1000, 0, 2);
 
+  // Fitting functions
+  TF1* uniform_f = new TF1("f1", "[0]");
+  TF1* exp_f = new TF1("f2", "[0]*exp(x*[1])");
+  TF1* gaus_f = new TF1("f3", "gaus", 0.3, 1);
+
   invMassOppositeCharge->Sumw2();
   invMassSameCharge->Sumw2();
 
@@ -63,7 +71,7 @@ int Main() {
 
   // Simulating Events
   std::vector<Particle> eventParticles;
-  for (size_t i = 0; i < 1E4; i++) {
+  for (size_t i = 0; i < 1E5; i++) {
     eventParticles.clear();
 
     for (size_t j = 0; j != 100; j++) {
@@ -98,10 +106,9 @@ int Main() {
 
         invMassDaughters->Fill(p.InvMass(k));
 
-        particleDistribution->Fill(6);
+        particleDistribution->Fill(particle.GetIndex());
       } else {
-        particleDistribution->Fill(
-            Particle::FindParticleTest(particle.GetName()));
+        particleDistribution->Fill(particle.GetIndex());
         eventParticles.push_back(particle);
       }
     }
@@ -113,14 +120,37 @@ int Main() {
 
   c1->cd(1);
   particleDistribution->Draw();
+
   c1->cd(2);
-  phiDistribution->Draw();
+  phiDistribution->Fit(uniform_f);
+  phiDistribution->Draw("HISTO, SAME");
+  std::cout << "\n\n******  PHI Distribution Parameters:  *****\n"
+            << " Mean: " << uniform_f->GetParameter(0)
+            << "\n X/NDF: " << uniform_f->GetChisquare() / uniform_f->GetNDF()
+            << "\n Probability: " << uniform_f->GetProb()
+            << "\n******************************************\n\n";
+
   c1->cd(3);
-  thetaDistribution->Draw();
+  thetaDistribution->Fit(uniform_f);
+  thetaDistribution->Draw("HISTO, SAME");
+  std::cout << "\n\n******  THETA Distribution Parameters:  *****\n"
+            << " Mean: " << uniform_f->GetParameter(0)
+            << "\n X/NDF: " << uniform_f->GetChisquare() / uniform_f->GetNDF()
+            << "\n Probability: " << uniform_f->GetProb()
+            << "\n******************************************\n\n";
+
   c1->cd(4);
-  impulseDistribution->Draw();
+  impulseDistribution->Fit(exp_f);
+  impulseDistribution->Draw("HISTO, SAME");
+  std::cout << "\n\n******  Impulse Distribution Parameters:  *****\n"
+            << " Mean: " << exp_f->GetParameter(1)
+            << "\n X/NDF: " << exp_f->GetChisquare() / exp_f->GetNDF()
+            << "\n Probability: " << exp_f->GetProb()
+            << "\n******************************************\n\n";
+
   c1->cd(5);
   traverseImpulseDistribution->Draw();
+
   c1->cd(6);
   energyDistribution->Draw();
 
@@ -136,19 +166,59 @@ int Main() {
   invMassDaughters->Draw();
 
   c2->cd(6);
-  TH1F* firstSum = new TH1F(*invMassOppositeCharge);
+
+  TH1F* firstSum =
+      new TH1F("invMassOppositeCharge",
+               "Mass invariant of all same charge particles minus all "
+               "particles with opposite charge",
+               1000, 0, 4);
+
   firstSum->Add(invMassOppositeCharge, invMassSameCharge, 1, -1);
-  firstSum->SetTitle(
-      "Mass invariant of all same charge particles minus all "
-      "particles with opposite charge");
-  firstSum->Draw();
+  firstSum->Fit(gaus_f, "R");
+
+  std::cout << "\n\n******  Difference of opposite charge particles "
+               "Distribution Parameters:  *****\n"
+            << " Mean: " << gaus_f->GetParameter(1)
+            << " STDEV: " << gaus_f->GetParameter(2)
+            << "\n X/NDF: " << gaus_f->GetChisquare() / gaus_f->GetNDF()
+            << "\n Probability: " << gaus_f->GetProb()
+            << "\n******************************************\n\n";
+  firstSum->Draw("HISTO, SAME");
 
   c2->cd(7);
   TH1F* secondSum = new TH1F(*invMassKPOpposite);
   secondSum->SetTitle(
       "Mass invariant of pk with opposite charge minus pk with same charge");
   secondSum->Add(invMassKPOpposite, invMassKPSame, 1, -1);
-  secondSum->Draw();
+  secondSum->Fit(gaus_f);
+  std::cout
+      << "\n\n****** Difference of opposite charge Pions/Kaons Parameters:  "
+         "*****\n"
+      << " Mean: " << gaus_f->GetParameter(1)
+      << " STDEV: " << gaus_f->GetParameter(2)
+      << "\n X/NDF: " << gaus_f->GetChisquare() / gaus_f->GetNDF()
+      << "\n Probability: " << gaus_f->GetProb()
+      << "\n******************************************\n\n";
+  secondSum->Draw("HISTO, SAME");
+
+  // Write to file
+  std::unique_ptr<TFile> file(TFile::Open("data.root", "RECREATE"));
+  file->WriteObject(particleDistribution, particleDistribution->GetTitle());
+  file->WriteObject(phiDistribution, phiDistribution->GetTitle());
+  file->WriteObject(thetaDistribution, thetaDistribution->GetTitle());
+  file->WriteObject(impulseDistribution, impulseDistribution->GetTitle());
+  file->WriteObject(traverseImpulseDistribution,
+                    traverseImpulseDistribution->GetTitle());
+  file->WriteObject(energyDistribution, energyDistribution->GetTitle());
+  file->WriteObject(totalInvMass, totalInvMass->GetTitle());
+  file->WriteObject(invMassOppositeCharge, invMassOppositeCharge->GetTitle());
+  file->WriteObject(invMassSameCharge, invMassSameCharge->GetTitle());
+  file->WriteObject(invMassKPOpposite, invMassKPOpposite->GetTitle());
+  file->WriteObject(invMassKPSame, invMassKPSame->GetTitle());
+  file->WriteObject(invMassDaughters, invMassDaughters->GetTitle());
+  file->WriteObject(firstSum, firstSum->GetTitle());
+  file->WriteObject(secondSum, secondSum->GetTitle());
+  file->Close();
 
   return 0;
 }

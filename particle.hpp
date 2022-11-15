@@ -25,7 +25,6 @@ class Particle {
   void SetIndex(std::string name);
   int GetIndex();
   std::string GetName() const;
-  std::string GetType() const;
   int GetCharge() const;
   void Print() const;
   double GetPx() const;

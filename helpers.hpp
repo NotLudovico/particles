@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "TH1F.h"
 #include "particle.hpp"
 
 struct InitialConditions {

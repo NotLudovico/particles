@@ -13,9 +13,9 @@ InitialConditions GenerateParticleImpulse() {
   cond.phi = 2 * M_PI * gRandom->Rndm();
   cond.theta = M_PI * gRandom->Rndm();
   cond.p_module = gRandom->Exp(1);
-  cond.px = cond.p_module * cos(cond.theta) * sin(cond.phi);
+  cond.px = cond.p_module * cos(cond.phi) * sin(cond.theta);
   cond.py = cond.p_module * sin(cond.theta) * sin(cond.phi);
-  cond.pz = cond.p_module * cos(cond.phi);
+  cond.pz = cond.p_module * cos(cond.theta);
 
   return cond;
 }
@@ -67,7 +67,8 @@ void AnalizeData(std::vector<Particle> const& particles, TH1F* totalInvMass,
             (first_type == "Kaon" && second_type == "Pion"))
           invMassKPSame->Fill(invMass);
 
-      } else {
+      } else if (first.GetCharge() * second.GetCharge() <
+                 0) {  // Opposite charge
         invMassOppositeCharge->Fill(invMass);
 
         if ((first_type == "Pion" && second_type == "Kaon") ||

@@ -14,7 +14,7 @@
 #include "particleType.hpp"
 #include "resonanceType.hpp"
 
-int main() {
+int Main() {
   Particle::AddParticleType("Pion+", 0.13957, 1);
   Particle::AddParticleType("Pion-", 0.13957, -1);
   Particle::AddParticleType("Kaon+", 0.49367, 1);
@@ -126,8 +126,11 @@ int main() {
   phiDistribution->Draw("HISTO, SAME");
   std::cout << "\n\n******  PHI Distribution Parameters:  *****\n"
             << " Mean: " << uniform_f->GetParameter(0)
+            << "\nMean Error: " << uniform_f->GetParError(0)
             << "\n X/NDF: " << uniform_f->GetChisquare() / uniform_f->GetNDF()
             << "\n Probability: " << uniform_f->GetProb()
+            << "\n NDF: " << uniform_f->GetNDF()
+            << "\n X: " << uniform_f->GetChisquare()
             << "\n******************************************\n\n";
 
   c1->cd(3);
@@ -135,8 +138,11 @@ int main() {
   thetaDistribution->Draw("HISTO, SAME");
   std::cout << "\n\n******  THETA Distribution Parameters:  *****\n"
             << " Mean: " << uniform_f->GetParameter(0)
+            << "\nMean Error: " << uniform_f->GetParError(0)
             << "\n X/NDF: " << uniform_f->GetChisquare() / uniform_f->GetNDF()
             << "\n Probability: " << uniform_f->GetProb()
+            << "\n NDF: " << uniform_f->GetNDF()
+            << "\n X: " << uniform_f->GetChisquare()
             << "\n******************************************\n\n";
 
   c1->cd(4);
@@ -144,8 +150,11 @@ int main() {
   impulseDistribution->Draw("HISTO, SAME");
   std::cout << "\n\n******  Impulse Distribution Parameters:  *****\n"
             << " Mean: " << exp_f->GetParameter(1)
+            << "\nMean Error: " << uniform_f->GetParError(0)
             << "\n X/NDF: " << exp_f->GetChisquare() / exp_f->GetNDF()
             << "\n Probability: " << exp_f->GetProb()
+            << "\n NDF: " << uniform_f->GetNDF()
+            << "\n X: " << uniform_f->GetChisquare()
             << "\n******************************************\n\n";
 
   c1->cd(5);
@@ -157,22 +166,22 @@ int main() {
   c2->cd(1);
   totalInvMass->Draw();
   c2->cd(2);
-  invMassSameCharge->Draw();
+  invMassOppositeCharge->Draw();
   c2->cd(3);
-  invMassKPOpposite->Draw();
+  invMassSameCharge->Draw();
   c2->cd(4);
-  invMassKPSame->Draw();
+  invMassKPOpposite->Draw();
   c2->cd(5);
+  invMassKPSame->Draw();
+  c2->cd(6);
   invMassDaughters->Draw();
 
-  c2->cd(6);
+  c2->cd(7);
 
-  TH1F* firstSum =
-      new TH1F("invMassOppositeCharge",
-               "Mass invariant of all same charge particles minus all "
-               "particles with opposite charge",
-               1000, 0, 4);
-
+  TH1F* firstSum = new TH1F(*invMassOppositeCharge);
+  firstSum->SetTitle(
+      "Mass invariant of particles with opposite charge minus particles with "
+      "same charge");
   firstSum->Add(invMassOppositeCharge, invMassSameCharge, 1, -1);
   firstSum->Fit(gaus_f, "R");
 
@@ -185,7 +194,7 @@ int main() {
             << "\n******************************************\n\n";
   firstSum->Draw("HISTO, SAME");
 
-  c2->cd(7);
+  c2->cd(8);
   TH1F* secondSum = new TH1F(*invMassKPOpposite);
   secondSum->SetTitle(
       "Mass invariant of pk with opposite charge minus pk with same charge");
